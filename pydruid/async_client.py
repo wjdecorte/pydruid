@@ -102,7 +102,8 @@ class AsyncPyDruid(BaseDruidClient):
 
     @gen.coroutine
     def _post(self, query):
-        AsyncHTTPClient.configure(None, defaults=self.async_http_defaults)
+        AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient",
+                                  defaults=self.async_http_defaults)
         http_client = AsyncHTTPClient()
         try:
             headers, querystr, url = self._prepare_url_headers_and_body(query)
