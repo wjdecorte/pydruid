@@ -172,9 +172,7 @@ class Query(collections.MutableSequence):
                             for res in results]
                     nres += tres
             elif self.query_type == "groupBy":
-                nres = [list(v['event'].items()) + [('timestamp', v['timestamp'])]
-                        for v in self.result]
-                nres = [dict(v) for v in nres]
+                nres = [{'timestamp': v['timestamp'], **v['event']} for v in self.result]
             elif self.query_type == "select":
                 nres = []
                 for item in self.result:
