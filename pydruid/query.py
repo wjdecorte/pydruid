@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+import sys
 import six
 import json
 import collections
@@ -164,15 +164,25 @@ class Query(collections.MutableSequence):
                         for v in self.result]
                 nres = [dict(v) for v in nres]
             elif self.query_type == "topN":
-                nres = []
-                for item in self.result:
-                    timestamp = item['timestamp']
-                    results = item['result']
-                    tres = [dict(list(res.items()) + [('timestamp', timestamp)])
-                            for res in results]
-                    nres += tres
+                if sys.version_info >= (3, 5):
+                    nres = [{'timestamp': item['timestamp'], **res}
+                            for item in self.result
+                            for res in item['result']]
+                else:
+                    nres = []
+                    for item in self.result:
+                        timestamp = item['timestamp']
+                        results = item['result']
+                        tres = [dict(list(res.items()) + [('timestamp', timestamp)])
+                                for res in results]
+                        nres += tres
             elif self.query_type == "groupBy":
-                nres = [{'timestamp': v['timestamp'], **v['event']} for v in self.result]
+                if sys.version_info >= (3, 5):
+                    nres = [{'timestamp': v['timestamp'], **v['event']} for v in self.result]
+                else:
+                    nres = [list(v['event'].items()) + [('timestamp', v['timestamp'])]
+                            for v in self.result]
+                    nres = [dict(v) for v in nres]
             elif self.query_type == "select":
                 nres = []
                 for item in self.result:
