@@ -165,7 +165,6 @@ class Query(collections.MutableSequence):
                 nres = [dict(v) for v in nres]
             elif self.query_type == "topN":
                 if sys.version_info >= (3, 5):
-                    print("inside version >= 3.5 code")
                     nres = [{'timestamp': item['timestamp'], **res}
                             for item in self.result
                             for res in item['result']]
